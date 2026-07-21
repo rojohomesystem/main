@@ -16,9 +16,11 @@ y devuelve datos de ejemplo para que puedas probar todo el flujo.
 """
 
 import os
+import io
 import json
 import base64
 import datetime as dt
+import traceback
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -68,6 +70,25 @@ Reglas:
 - Si un dato no aparece, usa "" para texto y 0 para números.
 - Elige la categoría más lógica según lo comprado.
 - Devuelve SOLO el JSON."""
+
+
+def preparar_imagen(contenido: bytes, content_type: str):
+    """Achica la imagen y la pasa a JPEG para no exceder el límite de 5 MB de Anthropic."""
+    try:
+        from PIL import Image
+        try:
+            from pillow_heif import register_heif_opener
+            register_heif_opener()
+        except Exception:
+            pass
+        img = Image.open(io.BytesIO(contenido)).convert("RGB")
+        img.thumbnail((1568, 1568))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=85)
+        return buf.getvalue(), "image/jpeg"
+    except Exception as e:
+        print(f"[preparar_imagen] no se pudo procesar, uso original: {e}", flush=True)
+        return contenido, (content_type or "image/jpeg")
 
 
 def _demo(nombre_archivo: str) -> dict:
@@ -122,8 +143,9 @@ async def extract(file: UploadFile = File(...)):
     if not API_KEY:
         return _demo(file.filename)
 
-    media_type = file.content_type or "image/jpeg"
-    b64 = base64.standard_b64encode(contenido).decode("utf-8")
+    datos_img, media_type = preparar_imagen(contenido, file.content_type)
+    print(f"[extract] recibido {len(contenido)} bytes; enviando {len(datos_img)} bytes ({media_type})", flush=True)
+    b64 = base64.standard_b64encode(datos_img).decode("utf-8")
 
     try:
         import anthropic
@@ -143,7 +165,9 @@ async def extract(file: UploadFile = File(...)):
         texto = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
         datos = _parse_json(texto)
     except Exception as e:
-        raise HTTPException(502, f"Error al extraer con Claude: {e}")
+        print("[extract] ERROR llamando a Anthropic:", flush=True)
+        traceback.print_exc()
+        raise HTTPException(500, f"Error al extraer: {type(e).__name__}: {e}")
 
     # Normalizar tipos numéricos
     for k in ("subtotal", "impuesto", "total"):
