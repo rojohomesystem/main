@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-neutral-50 text-tinta antialiased;
+    font-size: 17px;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* Signature: acento de "brochazo" bajo el ítem activo del menú */
+  .brochazo {
+    position: relative;
+  }
+  .brochazo::after {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.3rem;
+    height: 3px;
+    border-radius: 2px;
+    background: #F5B301;
+  }
+
+  .btn-marca {
+    @apply inline-flex items-center gap-2 rounded-lg bg-marca px-4 py-2
+           font-semibold text-tinta transition hover:bg-marca-oscuro
+           hover:text-white disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-borde {
+    @apply inline-flex items-center gap-2 rounded-lg border border-neutral-300
+           bg-white px-4 py-2 font-medium text-tinta-suave transition
+           hover:border-neutral-400 hover:bg-neutral-50;
+  }
+  .campo {
+    @apply w-full rounded-lg border border-neutral-300 bg-white px-3 py-2
+           text-sm outline-none transition focus:border-marca
+           focus:ring-2 focus:ring-marca/30;
+  }
+  .etiqueta {
+    @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-500;
+  }
+  .tarjeta {
+    @apply rounded-xl border border-neutral-200 bg-white p-5 shadow-sm;
+  }
+
+  /* Botones grandes, pensados para uso fácil (dedos y vista) */
+  .btn-grande {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    background: #F5B301;
+    color: #412402;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-grande:hover {
+    background: #C98A00;
+    color: #ffffff;
+  }
+  .btn-out-grande {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    background: #ffffff;
+    color: #1C1B1A;
+    border: 1.5px solid #DEDED8;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-out-grande:hover {
+    background: #FAFAF8;
+    border-color: #C9C9C0;
+  }
+}

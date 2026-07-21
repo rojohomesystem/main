@@ -1,0 +1,16 @@
+# Node
+node_modules/
+dist/
+
+# Python
+venv/
+**/__pycache__/
+*.pyc
+
+# Entornos y secretos
+.env
+**/.env
+
+# Sistema
+.DS_Store
+Thumbs.db

@@ -1,0 +1,18 @@
+# Configuración de despliegue del FRONTEND en Netlify.
+# (El backend de Python se despliega aparte: Render / Railway / Fly.io)
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "frontend/dist"
+
+# Para que las rutas de React (/, /clientes, /facturas, /cotizador) funcionen
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Recuerda configurar las variables de entorno en el panel de Netlify:
+#   VITE_SUPABASE_URL
+#   VITE_SUPABASE_ANON_KEY
+#   VITE_BACKEND_URL   (la URL pública de tu backend de Python)
