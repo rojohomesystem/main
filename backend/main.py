@@ -76,11 +76,6 @@ def preparar_imagen(contenido: bytes, content_type: str):
     """Achica la imagen y la pasa a JPEG para no exceder el límite de 5 MB de Anthropic."""
     try:
         from PIL import Image
-        try:
-            from pillow_heif import register_heif_opener
-            register_heif_opener()
-        except Exception:
-            pass
         img = Image.open(io.BytesIO(contenido)).convert("RGB")
         img.thumbnail((1568, 1568))
         buf = io.BytesIO()
